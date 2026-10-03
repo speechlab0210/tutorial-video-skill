@@ -16,7 +16,7 @@ Maintain a glossary for pronunciation, abbreviations, translated terms, names, a
 2. **Synthesis text:** pronunciation expansions or phonetic substitutions, if required by the selected voice.
 3. **Captions:** readable words corresponding to what was actually said.
 
-Do not let phonetic workarounds leak into scholarly citations or the readable transcript. Do not delete all punctuation as a universal TTS fix; voice systems behave differently. Test difficult names, numbers, units, and mixed-language passages on the actual selected voice.
+Do not let phonetic workarounds leak into scholarly citations or the readable transcript. Do not delete all punctuation as a universal TTS fix; voice systems behave differently. By ear, on the actual selected voice and regardless of any ASR score, test difficult names, abbreviations and acronyms, words with more than one reading (for example Chinese 多音字 such as 重新, 銀行, 長), numbers (years, versions, ranges, decimals), units, symbols, and mixed-language passages.
 
 Keep meaningful context together when synthesizing. Over-fragmenting speech can cause inconsistent intonation and awkward joins. Choose segment sizes experimentally, bounded by tool constraints and revision cost. Save accepted takes with source hashes and settings. A newer take is not automatically better.
 
@@ -32,6 +32,6 @@ Keep speech speed natural unless the user requests otherwise. Estimate runtime f
 
 Use transcription to locate omissions, repetitions, pronunciation problems, and wrong takes. Normalize punctuation and equivalent number forms carefully, while preserving negatives, units, and comparison direction. A single missing “not” can reverse a claim despite a high overall similarity.
 
-For Chinese, phonetic comparison can help identify homophone transcription errors, but it must not erase meaningful ambiguity. There is no language-independent similarity threshold that proves correctness. Calibrate a diagnostic threshold on known good and bad samples for the chosen recognizer.
+For Chinese, phonetic comparison can help identify homophone transcription errors, but it must not erase meaningful ambiguity. Transcription and phonetic scores cannot detect a misreading that the recognizer's language model restores to the intended word, which is common for multi-reading words, acronyms, and number formats; check those glossary items by listening to the final audio, or report them as not checked. There is no language-independent similarity threshold that proves correctness. Calibrate a diagnostic threshold on known good and bad samples for the chosen recognizer.
 
 When a score is low, listen to the disputed passage before regenerating it. If the sound is correct and the recognizer is wrong, record that evidence. If the sound is wrong, fix the sound; correct captions do not excuse a false spoken claim. Bound retries and retain the best acceptable take.

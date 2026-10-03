@@ -2,7 +2,7 @@
 
 An AI agent skill for helping an instructor create a coherent, accurate, editable course video on **any subject**.
 
-**[繁體中文](README.zh-TW.md) · [Download v1.0.0](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.0.0) · [Skill entrypoint](tutorial-video/SKILL.md)**
+**[繁體中文](README.zh-TW.md) · [Download v1.1.0](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.1.0) · [Skill entrypoint](tutorial-video/SKILL.md) · [Changes](CHANGELOG.md)**
 
 The skill covers the whole teaching-production loop: understanding the audience, selecting a learning progression, checking evidence, designing explanations, synchronizing slides and speech, producing media, reviewing the finished lesson, and handling revisions and authorized delivery.
 
@@ -17,19 +17,26 @@ It grew from educational media production and a closely revised Interspeech conf
 - Place pauses according to thinking and viewing needs, rather than applying a fixed gap everywhere.
 - Verify claims with their actual conditions, denominators, source versions, and uncertainty.
 - Keep editable slides, notes, scripts, takes, video, captions, and downloads aligned during revision.
+- Measure slide changes against speech onsets in the exported file (start, middle, and end), not in a computed timeline.
+- Tell viewers when narration is synthesized or voice-cloned, or realistic imagery is generated.
 - Review correctness, comprehension, and technical integrity separately.
 
 These are decision tools, not a fixed presenter persona or slide formula. Research tutorials, software demonstrations, physical-skills lessons, humanities talks, business briefings, and workshops each get a different treatment.
 
 ## Download and use
 
-Download `tutorial-video-skill-v1.0.0.zip` from the [release page](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.0.0), or clone this repository:
+Download `tutorial-video-skill-v1.1.0.zip` from the [release page](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.1.0), or clone this repository:
 
 ```text
 git clone https://github.com/speechlab0210/tutorial-video-skill.git
 ```
 
-For an agent with a skill-folder mechanism, place the **entire `tutorial-video/` directory**, including references, assets, and scripts, in its configured skills directory. For a local Codex installation, this can be `~/.codex/skills/tutorial-video/`. Do not copy only `SKILL.md`. Other agents can read that file directly and follow its linked references; host-specific automatic discovery is not guaranteed.
+For an agent with a skill-folder mechanism, place the **entire `tutorial-video/` directory**, including references, assets, and scripts, in its configured skills directory. The release ZIP unpacks to a `tutorial-video-skill/` folder; copy only its `tutorial-video/` subfolder, for example to:
+
+- `~/.claude/skills/tutorial-video/` (Claude Code, personal) or `<project>/.claude/skills/tutorial-video/` (Claude Code, one project)
+- `~/.codex/skills/tutorial-video/` (Codex)
+
+Do not copy only `SKILL.md`. Other agents can read that file directly and follow its linked references; host-specific automatic discovery is not guaranteed.
 
 Example request:
 
@@ -39,7 +46,7 @@ Existing material:
 
 > Use the tutorial-video skill to revise only section 2 of this lecture. Preserve the accepted sequence and voice. Explain the confusing diagram with one concrete example, and synchronize notes, audio, captions, and video. Leave other sections unchanged.
 
-The skill respects draft-only, read-only, and narrow-revision requests. It does not treat video creation as automatic permission to publish or email.
+The skill respects draft-only, read-only, and narrow-revision requests. It honors explicit publishing or email authorization the user has already given for this work, destination, and visibility, but does not treat video creation as automatic permission to publish, share, or email.
 
 ## Included resources
 
@@ -58,11 +65,12 @@ The skill respects draft-only, read-only, and narrow-revision requests. It does 
 | [Templates](tutorial-video/assets/templates) | Brief, claims, revision, review, and render configuration |
 | [Worked example](tutorial-video/assets/examples/weighted-averages.json) | A complete small plan with explicit beats and synthetic numbers |
 | [Cross-domain scenarios](examples/cross-domain.md) | Gardening, history, software, and targeted revision examples |
-| [Local helpers](tutorial-video/references/tool-contracts.md) | Plan checks, transition strip, SRT checks, hashes, simple assembly |
+| [Local helpers](tutorial-video/references/tool-contracts.md) | Plan checks, scene outline for the transition strip, SRT checks, hashes, simple assembly |
+| [Codex UI metadata](tutorial-video/agents/openai.yaml) | Optional display name and default prompt for Codex; other hosts ignore it |
 
 ## Optional helpers
 
-Python 3.10+ is sufficient for planning, caption structure checks, and manifests. There are no Python package dependencies and no network calls. Run from this repository:
+Python 3.10+ is sufficient for planning, caption structure checks, and manifests (use `python3` or `py -3` where `python` is unavailable). There are no Python package dependencies and no network calls. Run from this repository (paths are examples; `captions` and `manifest` check files you produce later: an exported SRT and a folder of finished deliverables). With an installed skill, work in your own project folder and replace `tutorial-video/` below with the installed skill folder's full path:
 
 ```text
 python tutorial-video/scripts/project.py init my-lesson
@@ -74,13 +82,13 @@ python tutorial-video/scripts/project.py manifest my-lesson/deliverables --out m
 
 The initialized plan is deliberately incomplete. Fill it before checking it. A structural pass is not an educational quality rating.
 
-For narrated still scenes, install FFmpeg and FFprobe with H.264/AAC support, prepare real images and authorized audio, adapt the included render template, and run:
+For narrated still scenes, install FFmpeg and FFprobe with H.264/AAC support, prepare real images and authorized audio, copy `tutorial-video/assets/templates/render.json` into your project (e.g. `my-lesson/`), edit its asset paths, and run:
 
 ```text
 python tutorial-video/scripts/assemble.py my-lesson/render.json --out my-lesson/video.mp4
 ```
 
-This produces a new movie and measured timeline receipt. It does not synthesize speech, create slides, normalize loudness, generate captions, or inspect comprehension. Animated slides and live demos need an appropriate editor. See [the contracts and limits](tutorial-video/references/tool-contracts.md).
+This produces a new movie and a timeline receipt. Narration is encoded once across the whole timeline and every scene starts on the frame grid, so speech stays on its slide however many scenes there are; the assembler checks decoded audio length against video length before writing the file. It does not synthesize speech, create slides, normalize loudness, generate captions, or inspect comprehension. Animated slides and live demos need an appropriate editor. See [the contracts and limits](tutorial-video/references/tool-contracts.md).
 
 ## Validation and limits
 
@@ -88,7 +96,7 @@ This produces a new movie and measured timeline receipt. It does not synthesize 
 python -m unittest discover -s tests -v
 ```
 
-Tests exercise malformed plans, coverage and ID errors, Unicode captions, overlap and duration errors, hash integrity, no-overwrite behavior, and rendering path boundaries. An integration test builds two synthetic scenes with different colors and tones, decodes the movie, checks scene order and retained ending silence, and records skips if FFmpeg/FFprobe are unavailable.
+Tests exercise malformed plans, coverage and ID errors, Unicode captions and console output, overlap and duration errors, hash integrity, link rejection, no-overwrite behavior, and rendering path boundaries. Media integration tests build synthetic movies and measure the shipped MP4: scene order and retained ending silence; a 12-scene sync test at 30 and 7 fps that compares every slide change with the matching speech onset; a VBR MP3 whose container under-reports its length; awkward slide files (a `%` in the name, transparency, GIF, a JPEG with a `.png` name); and error messages that name the failing scene. To run them, put FFmpeg/FFprobe on PATH or set `FFMPEG_BINARY` and `FFPROBE_BINARY` to their full paths (only the tests read these variables). Run with `-v` and read any skip reasons: "FFmpeg/FFprobe unavailable" or "libmp3lame unavailable" means media integration was not verified; "cannot create a symlink here" (or junction) only means the account cannot create that kind of link.
 
 The repository also includes [manual behavioral evaluation cases](tests/behavioral-cases.md). Passing automated tests proves these helper behaviors, not cross-agent compatibility, factual accuracy in arbitrary subjects, or learning effectiveness. No controlled learner study is claimed.
 

@@ -9,7 +9,12 @@ from pathlib import Path
 
 def package(output):
     root = Path(__file__).resolve().parent
-    if subprocess.check_output(["git", "status", "--porcelain"], cwd=root).strip():
+    try:
+        dirty = subprocess.check_output(["git", "status", "--porcelain"], cwd=root).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        raise SystemExit("git status failed (see any git error above); package.py is the "
+                         "maintainer release script and must run inside a working git clone")
+    if dirty:
         raise ValueError("commit or account for working-tree changes before packaging")
     raw = subprocess.check_output(["git", "ls-files", "-z"], cwd=root)
     files = sorted(name.decode("utf-8") for name in raw.split(b"\0") if name)
@@ -18,7 +23,7 @@ def package(output):
     output = Path(output).resolve()
     if output.is_relative_to(root):
         raise ValueError("release archive must be outside source repository")
-    with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED) as archive:
         for name in files:
             path = root / name
             if path.is_symlink():

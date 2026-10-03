@@ -33,7 +33,7 @@ A statement that “we ran this experiment” needs the actual result or demonst
 
 ## A coherent design system
 
-Record a compact palette, typography, category colors, component rules, and caption-safe area. Reuse the same category color across the entire course. Colors are project choices, not universal meanings. Pair color with labels or shape differences for accessibility.
+Record a compact palette, typography, category colors, component rules, and caption-safe area. Reuse the same category color across the entire course. Colors are project choices, not universal meanings. Pair color with labels or shape differences for accessibility. Check text and essential graphics against their background in final viewing conditions (projector, compression); WCAG's 4.5:1 for normal text and 3:1 for large text is a useful reference, not a substitute for viewing the export.
 
 Choose font sizes by final viewing conditions. Pixel sizes, slide points, and embedded image dimensions are different units; a fixed number is not a universal readability guarantee. Inspect at realistic laptop/projector/mobile sizes. Enlarge the actual figure instead of filling unused space with decoration.
 
@@ -41,6 +41,6 @@ Provide useful alternative descriptions in accompanying materials where supporte
 
 ## Inspect the real export
 
-Render and inspect every final slide, with particular attention to clipped bottom lines, missing glyphs, tiny citations, stale labels, altered master backgrounds, distorted aspect ratios, and captions covering content. A contact sheet locates issues; it is not enough for small text.
+Render and inspect every final slide, with particular attention to clipped bottom lines, missing glyphs, tiny citations, low-contrast text, stale labels, altered master backgrounds, distorted aspect ratios, and captions covering content. A contact sheet locates issues; it is not enough for small text.
 
 Check consequential build states and embedded media in the actual presentation player. Native playback, PDF export, and the course video can behave differently. Keep untouched slides verifiably unchanged during a scoped revision.

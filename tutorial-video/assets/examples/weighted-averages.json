@@ -13,11 +13,12 @@
     {"id": "SEC2", "question": "How does the rule transfer when group sizes change?"}
   ],
   "claims": [
-    {"id": "C1", "text": "In this fictional example, the pooled mean is 65 and the equally weighted mean of group means is 70.", "kind": "illustration", "status": "verified", "conditions": "10 observations with mean 80 and 30 observations with mean 60; arithmetic calculated from the constructed inputs."}
+    {"id": "C1", "text": "In this fictional example, the pooled mean is 65 and the equally weighted mean of group means is 70.", "kind": "illustration", "status": "verified", "conditions": "10 observations with mean 80 and 30 observations with mean 60; arithmetic calculated from the constructed inputs."},
+    {"id": "C2", "text": "In this fictional example, with 20 observations in each group and the same group means, the pooled mean is 70 and equals the equally weighted mean of group means.", "kind": "illustration", "status": "verified", "conditions": "20 observations with mean 80 and 20 with mean 60; (1600+1200)/40 calculated from the constructed inputs."}
   ],
   "scenes": [
     {
-      "id": "S1", "section": "SEC1", "objective_ids": ["O2"], "claim_ids": [],
+      "id": "S1", "section": "SEC1", "objective_ids": ["O2"], "claim_ids": ["C1"],
       "title": "Two classrooms, one tempting shortcut",
       "narration": "Imagine two fictional classrooms. Ten learners average 80 points. Thirty learners average 60. If we average 80 and 60, we get 70. Are we weighting each classroom equally, or each learner? Pause and predict.",
       "transition": "To answer, let's recover the points contributed by each group.",
@@ -37,7 +38,7 @@
       ]
     },
     {
-      "id": "S3", "section": "SEC2", "objective_ids": ["O1", "O2"], "claim_ids": [],
+      "id": "S3", "section": "SEC2", "objective_ids": ["O1", "O2"], "claim_ids": ["C2"],
       "title": "Transfer: equal group sizes",
       "narration": "Suppose each classroom now has 20 learners, with the same averages of 80 and 60. Pause and calculate the pooled mean. It is 70: 1600 plus 1200, divided by 40. When the group sizes are equal, the two weighting rules agree. When you see an average of averages, ask who received equal weight and whether that matches the question.",
       "transition": "We can now answer the opening question: choose the weights to match the unit whose average you want.",

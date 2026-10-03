@@ -12,7 +12,7 @@
 - Instructor materials, comments, and protected scope:
 - Required sources / permissions:
 - Format, viewing conditions, accessibility:
-- Voice choice and authorization:
+- Voice choice, authorization, and synthetic-media disclosure:
 - Available tools, budget, and generation constraints:
 - Destination, audience, and existing publication/delivery authorization:
 - Reversible assumptions and consequential unknowns:

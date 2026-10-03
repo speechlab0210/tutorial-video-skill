@@ -3,7 +3,7 @@ name: tutorial-video
 description: Plan, produce, review, or revise a lecture, tutorial, workshop recording, or course video with a coherent learning progression and synchronized editable slides, narration, captions, and media. Use for any subject and for existing instructor materials; a request for slides alone does not require producing a video.
 license: MIT
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Tutorial Video
@@ -18,7 +18,7 @@ Read existing status, accepted source files, instructor comments, hidden-slide s
 
 Infer from the brief what you can: audience and prerequisites; what learners should be able to do; language; duration and whether it is a hard limit; format; required sources; editable deliverables; voice rights and preference; tools and budget; accessibility; destination and visibility. Ask only about consequential unknowns. Keep reversible assumptions visible and continue independent work.
 
-Use [the brief template](assets/templates/brief.md) if a project has no equivalent. A short lesson need not have a large project structure. For a substantial course, `python scripts/project.py init PATH` creates a small editable planning package without overwriting an existing directory.
+Use [the brief template](assets/templates/brief.md) if a project has no equivalent. A short lesson need not have a large project structure. For a substantial course, `python <skill-dir>/scripts/project.py init <project>` creates a small editable planning package in the user's workspace without overwriting an existing directory.
 
 ## Build the lesson around understanding
 
@@ -58,9 +58,9 @@ For a full new production, make one representative segment spanning a difficult 
 
 Read [media production](references/media-production.md). Use available authorized tools; this skill does not require a particular model, cloud service, operating system, or speaker identity.
 
-Keep the display script, pronunciation form, actual recording, and caption text related but distinct. Use only a voice that is authorized for this use. Do not silently substitute a speaker or upload private scripts to an unapproved service. Record tool versions, settings, input hashes, and accepted takes so unchanged material can be reused.
+Keep the display script, pronunciation form, actual recording, and caption text related but distinct. Use only a voice that is authorized for this use. When narration is synthesized or voice-cloned, or realistic footage or imagery is generated, tell viewers (on screen, in credits, or in the description). Never present a cloned voice speaking new text as an original recording. Do not silently substitute a speaker or upload private scripts to an unapproved service. Record tool versions, settings, input hashes, and accepted takes so unchanged material can be reused.
 
-Calculate the timeline from measured rendered media durations. Align captions against actual speech; do not spread text uniformly across a slide and call it word alignment. Verify the exported movie, including its end, rather than only checking inputs.
+Calculate the timeline from measured rendered media durations. Align captions against actual speech; do not spread text uniformly across a slide and call it word alignment. Verify the exported movie, including its end, rather than only checking inputs. Measure audio/video sync in the exported file itself: at the start, middle, and end, compare how long after its slide change each scene's speech begins with that take's own leading silence; the difference must not grow along the video.
 
 For changes, read [revision and delivery](references/revision-and-delivery.md). Follow the dependency chain:
 
@@ -78,14 +78,14 @@ Read [quality review](references/quality-review.md), and record evidence in [the
 
 Automated scores are diagnostic evidence. High ASR similarity, valid files, and clean layout do not prove semantic fidelity or learning. If playback/listening, native editing, source access, or learner testing was unavailable, say exactly what remains unverified. Use a fresh review perspective or an independent reviewer when authorized and useful; distinguish simulated learner review from real learner evidence.
 
-Optional local helpers (Python 3.10+, standard library):
+Optional local helpers (Python 3.10+, standard library). `<skill-dir>` is this skill's own folder: work in the user's project directory, call each script by its full path, and keep project files outside the skill folder. Use `python3` or `py -3` where `python` is unavailable.
 
 ```text
-python scripts/project.py check PATH/project.json
-python scripts/project.py outline PATH/project.json
-python scripts/project.py captions PATH/captions.srt --duration 120
-python scripts/project.py manifest PATH/deliverables --out PATH/manifest.json
-python scripts/assemble.py PATH/render.json --out PATH/video.mp4
+python <skill-dir>/scripts/project.py check <project>/project.json
+python <skill-dir>/scripts/project.py outline <project>/project.json
+python <skill-dir>/scripts/project.py captions <project>/captions.srt --duration 120
+python <skill-dir>/scripts/project.py manifest <project>/deliverables --out <project>/manifest.json
+python <skill-dir>/scripts/assemble.py <project>/render.json --out <project>/video.mp4
 ```
 
 The assembler additionally needs FFmpeg and FFprobe and supports narrated still scenes. Use a suitable editor for animation, live demos, multiple tracks, and interactive reveals. Read [tool contracts](references/tool-contracts.md) before using helpers. A passing helper check is not a release approval.
@@ -94,6 +94,6 @@ The assembler additionally needs FFmpeg and FFprobe and supports narrated still 
 
 Deliver the agreed subset: editable source, accessible video, captions, transcript, citations, chapter times, thumbnail if useful, and concise change/verification notes. State measured duration, version, limitations, and where each file is.
 
-Honor already-given publishing or email authorization. Otherwise creation alone does not authorize publication, wider sharing, or sending. For an authorized remote action, verify account, audience, final content, and destination; submit once and read back the resulting object. Reconcile uncertain outcomes before any retry. Retain publication and delivery receipts separately from public source material.
+Honor explicit publishing or email authorization the user has already given for this work, destination, and visibility; a grant for another project, destination, or audience does not carry over. Otherwise creation alone does not authorize publication, wider sharing, or sending. Before any remote action, read [revision and delivery](references/revision-and-delivery.md#authorized-remote-actions). For an authorized remote action, verify account, audience, final content, required synthetic-media disclosure (including the destination's AI or altered-content setting where one exists), and destination; submit once and read back the resulting object. Reconcile uncertain outcomes before any retry. Retain publication and delivery receipts separately from public source material.
 
 For the rationale behind these practices and their origins, see [collaboration lessons](references/collaboration-lessons.md). These lessons are transferable decision criteria, not a requirement to imitate a particular instructor or topic.

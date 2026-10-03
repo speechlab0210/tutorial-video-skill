@@ -28,7 +28,7 @@ An independent reviewer can help if available and authorized. Give them the actu
 
 View every final slide at readable size. Exercise consequential animation and media states, and inspect all changed scenes in context. Use automated checks for bounds, broken links, cue order, hashes, duration, and missing files. Watch/listen at normal speed across the finished lesson when feasible; record actual coverage if not.
 
-Check the last seconds and final frame explicitly. A clean first minute does not detect a truncated conclusion. Inspect the stitched full course even if each chapter passed separately.
+Check the last seconds and final frame explicitly. A clean first minute does not detect a truncated conclusion. Inspect the stitched full course even if each chapter passed separately. Measure audio/video sync in the exported file itself: at the start, middle, and end, compare how long after its slide change each scene's speech begins with that take's own leading silence (see [media production](media-production.md#evidence-from-the-final-artifact)). A timeline derived from clip durations cannot reveal accumulated audio delay.
 
 ## Calibrate the checker
 

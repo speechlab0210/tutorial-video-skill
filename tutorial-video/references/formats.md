@@ -17,7 +17,7 @@ Do not force every format into a research survey, an exam, or a slide monologue.
 
 An instructor's deck may already have a strong structure. Preserve it and repair the requested weaknesses. A historical source order, proof sequence, or procedure may be essential; reorganizing it around generic “capabilities” can make it worse.
 
-For a live lecture adaptation, distinguish the words captured in the recording from edits to a new narration script. A transcript correction must not falsely imply the speaker said a revised claim. Label corrected editions or rerecord the authorized passage.
+For a live lecture adaptation, distinguish the words captured in the recording from edits to a new narration script. A transcript correction must not falsely imply the speaker said a revised claim. Label corrected editions or rerecord the authorized passage; label a synthesized re-narration as synthesized.
 
 ## Multi-part and multilingual courses
 

@@ -12,6 +12,8 @@ Distinguish:
 - Constructed teaching examples.
 - Unresolved or contested assertions.
 
+In `project.json` these map to `kind` = `source`, `demonstration`, `interpretation`, and `illustration` (constructed teaching examples); an unresolved or contested assertion keeps its underlying kind with a `status` other than `verified`. See [tool contracts](tool-contracts.md#planning-captions-and-integrity) for how the JSON ledger relates to `claims.csv`.
+
 Do not put private source URLs or raw correspondence into public deliverables. Use an appropriate public citation, or describe the limitation without exposing the private material.
 
 ## Read beyond the headline

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import re
 import shutil
 import sys
@@ -29,7 +30,8 @@ def check_project(data):
     errors, warnings = [], []
     if not isinstance(data, dict):
         return ["project must be an object"], []
-    if data.get("schema_version") != 1:
+    version = data.get("schema_version")
+    if isinstance(version, bool) or version != 1:
         errors.append("schema_version must be 1")
     for key in ("title", "audience", "language", "central_question"):
         if not nonempty(data.get(key)):
@@ -69,7 +71,8 @@ def check_project(data):
         if not nonempty(item.get("text")):
             errors.append(f"claim {identifier}: text is required")
         if item.get("kind") not in ("source", "demonstration", "illustration", "interpretation"):
-            errors.append(f"claim {identifier}: invalid kind")
+            errors.append(f"claim {identifier}: invalid kind {item.get('kind')!r}; "
+                          "expected source, demonstration, illustration, or interpretation")
         if item.get("kind") in ("source", "interpretation"):
             for field in ("source", "location", "conditions"):
                 if not nonempty(item.get(field)):
@@ -113,7 +116,7 @@ def check_project(data):
                 continue
             bid = beat.get("id")
             if not nonempty(bid):
-                errors.append(f"scene {identifier}: beat id is required")
+                errors.append(f"scene {identifier}: beat id must be nonempty text")
             elif bid in beat_ids:
                 errors.append(f"duplicate beat id: {bid}")
             else:
@@ -166,7 +169,7 @@ def check_captions(text, duration=None):
     text = text.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n").strip()
     if not text:
         return ["caption file is empty"], [], 0
-    blocks = re.split(r"\n[ \t]*\n", text)
+    blocks = re.split(r"\n(?:[ \t]*\n)+", text)
     previous_end = 0.0
     for position, block in enumerate(blocks, 1):
         lines = block.splitlines()
@@ -194,27 +197,54 @@ def check_captions(text, duration=None):
     return errors, warnings, len(blocks)
 
 
+LINK_TAGS = (0xA000000C, 0xA0000003)  # Windows reparse tags: symbolic link, junction
+
+
+def is_link(path):
+    """True for symlinks and for Windows junctions, which is_symlink() does not report."""
+    return path.is_symlink() or getattr(os.lstat(path), "st_reparse_tag", 0) in LINK_TAGS
+
+
 def make_manifest(root):
     root = Path(root).resolve()
     if not root.is_dir():
         raise ValueError("manifest input must be a directory")
-    files = []
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink():
-            raise ValueError("symlinks are not supported in deliverables")
-        if path.is_file():
-            digest = hashlib.sha256()
-            with path.open("rb") as stream:
-                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-                    digest.update(chunk)
-            files.append({"path": path.relative_to(root).as_posix(),
-                          "bytes": path.stat().st_size, "sha256": digest.hexdigest()})
+    files, pending = [], [root]
+    # Walk without following links so nothing outside the directory can be hashed.
+    while pending:
+        for path in pending.pop().iterdir():
+            if is_link(path):
+                raise ValueError(f"symlinks, junctions, and other links are not supported in deliverables: "
+                                 f"{path.relative_to(root).as_posix()}")
+            if path.is_dir():
+                pending.append(path)
+            elif path.is_file():
+                digest = hashlib.sha256()
+                with path.open("rb") as stream:
+                    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                files.append({"path": path.relative_to(root).as_posix(),
+                              "bytes": path.stat().st_size, "sha256": digest.hexdigest()})
     if not files:
         raise ValueError("deliverables directory is empty")
+    files.sort(key=lambda entry: entry["path"])
     return {"schema_version": 1, "files": files}
 
 
+def positive_seconds(text):
+    value = float(text)
+    if not math.isfinite(value) or value <= 0:
+        raise argparse.ArgumentTypeError("duration must be finite and positive")
+    return value
+
+
 def main():
+    # Lesson text can be in any language; never let a console code page crash the report.
+    # Write UTF-8 unless the user chose an encoding with PYTHONIOENCODING.
+    chosen = {} if os.environ.get("PYTHONIOENCODING") else {"encoding": "utf-8"}
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="backslashreplace", **chosen)
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("init").add_argument("path")
@@ -222,7 +252,8 @@ def main():
         sub.add_parser(command).add_argument("project")
     captions = sub.add_parser("captions")
     captions.add_argument("srt")
-    captions.add_argument("--duration", type=float)
+    captions.add_argument("--duration", type=positive_seconds,
+                          help="measured final video duration in seconds; without it cue ends are not checked")
     manifest = sub.add_parser("manifest")
     manifest.add_argument("directory")
     manifest.add_argument("--out", required=True)
@@ -231,6 +262,8 @@ def main():
         if args.command == "init":
             init_project(args.path)
         elif args.command in ("check", "outline"):
+            if Path(args.project).is_dir():
+                raise ValueError(f"{args.project} is a directory; pass the path to its project.json")
             data = read_json(args.project)
             errors, warnings = check_project(data)
             if args.command == "check" or errors:
@@ -246,7 +279,9 @@ def main():
             errors, warnings, count = check_captions(
                 Path(args.srt).read_text(encoding="utf-8-sig"), args.duration)
             print(json.dumps({"cues": count, "errors": errors, "warnings": warnings,
-                              "speech_alignment": "not checked"}, indent=2))
+                              "duration_check": "performed" if args.duration is not None
+                              else "not performed (pass --duration)",
+                              "speech_alignment": "not checked"}, ensure_ascii=False, indent=2))
             return int(bool(errors))
         else:
             root, out = Path(args.directory).resolve(), Path(args.out).resolve()

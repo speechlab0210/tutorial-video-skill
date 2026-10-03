@@ -2,7 +2,7 @@
 
 讓 AI agent 協助老師把各種主題做成**有主線、講得清楚、可編輯、可查核的課程影片**。
 
-**[English](README.md) · [下載 v1.0.0](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.0.0) · [Skill 入口](tutorial-video/SKILL.md)**
+**[English](README.md) · [下載 v1.1.0](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.1.0) · [Skill 入口](tutorial-video/SKILL.md) · [更新紀錄](CHANGELOG.md)**
 
 這個 skill 整合既有的教學與表達方法、課程影片製作的工程經驗，以及共同製作 Interspeech tutorial 時反覆修訂所得到的教訓。它適用於不同領域，包含研究教學、軟體操作、實作課、歷史人文、商業簡報、工作坊與一般演講。
 
@@ -17,13 +17,20 @@
 - 停頓依照看圖、思考、預測與轉場的需要安排。
 - 查核來源版本、條件、分母、篩選方式與結論範圍。
 - 修改後同步投影片、備忘稿、逐字稿、配音、字幕、影片與下載素材。
+- 在成品檔裡實測投影片換頁和那段旁白開口的時間（開頭、中段、結尾都量），不拿推算出來的時間表當證據。
+- 旁白是合成或複製的聲音、畫面是生成的寫實影像時，讓觀眾知道。
 - 分開檢查內容正確性、觀眾理解與技術品質。
 
 特定專案的聲音、配色、語言、片長與軟體都改為可選設定；不需要模仿某個講者，也不綁定原 tutorial 主題。
 
 ## 安裝與使用
 
-從 [Release](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.0.0) 下載 `tutorial-video-skill-v1.0.0.zip`，或下載整個 repository。把完整的 `tutorial-video/` 資料夾放到 agent 設定的 skills 目錄。使用本機 Codex 時，可放在 `~/.codex/skills/tutorial-video/`。必須一起保留 references、assets 與 scripts。
+從 [Release](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.1.0) 下載 `tutorial-video-skill-v1.1.0.zip`，或下載整個 repository。Release zip 解開後外層是 `tutorial-video-skill/`，只要把裡面完整的 `tutorial-video/` 子資料夾放進 agent 設定的 skills 目錄，例如：
+
+- Claude Code：`~/.claude/skills/tutorial-video/`（個人）或專案內 `.claude/skills/tutorial-video/`
+- Codex：`~/.codex/skills/tutorial-video/`
+
+必須一起保留 references、assets 與 scripts。`agents/openai.yaml` 只是 Codex 介面用的顯示名稱與預設指令，其他環境會忽略它。
 
 沒有 skill 自動載入機制的 agent，也可以先讀 `tutorial-video/SKILL.md`，再按任務讀需要的參考文件。其他執行環境是否自動辨識，仍依該環境設定。
 
@@ -33,15 +40,15 @@
 
 局部修訂：
 
-> 使用 tutorial-video skill，只修改這堂課第二部分那張看不懂的圖。保留接受版本的順序與聲音，改成具體例子，並同步備忘稿、旁白、字幕與影片。
+> 使用 tutorial-video skill，只修改這堂課第二部分那張看不懂的圖。保留已確認版本的順序與旁白聲音，改成具體例子，並同步備忘稿、旁白、字幕與影片。
 
-Skill 主指令與技術文件以英文撰寫，便於不同 agent 使用；產出語言依使用者要求。它保留「只看稿」「唯讀查核」「只改某一部分」等工作邊界，並沿用使用者已給的發布或寄信授權。
+Skill 主指令與技術文件以英文撰寫，便於不同 agent 使用；產出語言依使用者要求。它保留「只看稿」「唯讀查核」「只改某一部分」等工作邊界，並沿用使用者已明確給予、適用於該作品、目的地與公開範圍的發布或寄信授權；沒有這類授權時，做完影片本身不代表可以發布、分享或寄出。
 
 ## 隨附工具與範本
 
-包含需求 brief、證據表、修改對照表、品質檢查表、渲染設定，以及完整的小型教學規劃範例。Python 工具可建立專案、檢查段落與學習目標對應、列出轉場、檢查 SRT 時碼及建立 SHA-256 清單。
+包含需求 brief、證據表、修改對照表、品質檢查表、渲染設定，以及完整的小型教學規劃範例。Python 工具可建立專案、檢查段落與學習目標對應、列出各場景旁白與轉場（供「轉場句排成一列」檢查使用）、檢查 SRT 時碼及建立 SHA-256 清單。安裝成 skill 後，請在自己的專案資料夾工作，用完整路徑呼叫 skill 資料夾裡的腳本；沒有 `python` 指令時改用 `python3` 或 `py -3`。
 
-另有簡易靜態投影片影片組裝器：提供圖片與已授權的錄音，再使用 FFmpeg / FFprobe 產生影片與實測時間軸。它不會自動生圖、配音或檢查觀眾理解。動畫與操作示範可使用合適的編輯工具，遵循同一套教學與驗收方法。
+另有簡易靜態投影片影片組裝器：提供圖片與已授權的錄音，再使用 FFmpeg / FFprobe 產生影片與時間軸紀錄。旁白會整條一次編碼、每個場景都從整數影格開始，所以場景再多，聲音也不會一段比一段晚；寫出檔案前會比對解碼後的聲音長度與影片長度。它不會自動生圖、配音、做音量標準化、產生字幕或檢查觀眾理解。動畫與操作示範可使用合適的編輯工具，遵循同一套教學與驗收方法。
 
 安裝、指令、驗證方式與限制見 [英文說明](README.md) 及 [工具契約](tutorial-video/references/tool-contracts.md)。
 

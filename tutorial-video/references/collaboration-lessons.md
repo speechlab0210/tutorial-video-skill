@@ -19,7 +19,7 @@ These practices are adapted to the format and audience; they are not universal s
 - Treat the project as linked artifacts with stable identities, explicit dependencies, and an accepted baseline.
 - Preserve native editability where future changes matter.
 - Match reused audio by content and provenance instead of filenames.
-- Measure actual clips to construct the timeline; verify the final exported movie.
+- Measure actual clips to construct the timeline; verify sync and timing in the final exported movie.
 - Separate recognizer errors from spoken errors and technical success from semantic success.
 - Cache accepted costly generations, bound retries, and keep resumable state.
 - Verify remote content and visibility after an authorized write; resolve uncertain outcomes before repeating it.
@@ -45,4 +45,4 @@ These practices are adapted to the format and audience; they are not universal s
 
 The original production involved particular languages, voices, software, color tags, source topics, and private delivery channels. Those are configuration choices here. This package does not require a specific instructor persona, voice clone, image service, numerical ASR threshold, fixed pause duration, slide count, public destination, or topic taxonomy.
 
-Where older production habits conflicted with later evidence, the guide retains the stronger principle: actual clip timing over assumed padding; semantic listening over a single transcription score; native quantitative graphics over imprecise generated text; accepted editions over recency; and comprehension over mere completion.
+Where older production habits conflicted with later evidence, the guide retains the stronger principle: actual clip timing over assumed padding, and offsets measured in the shipped file over computed timelines; semantic listening over a single transcription score; native quantitative graphics over imprecise generated text; accepted editions over recency; and comprehension over mere completion.

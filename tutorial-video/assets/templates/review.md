@@ -24,9 +24,13 @@
 
 - Every slide and consequential reveal state:
 - Native editable sources and embedded media:
-- Actual audio, critical names/numbers/negation:
+- Actual audio, critical names/numbers/heteronyms/negation:
+- Loudness (measured integrated / true peak, target):
 - Full decode, measured duration, final seconds/frame:
+- A/V sync measured in the exported file (speech onset after slide change minus the take's own leading silence, start/middle/end):
 - Captions and chapter offsets:
+- Accessibility (text contrast, caption readability for the language, on-screen-only information described):
+- Synthetic narration/imagery disclosure (video, description, platform setting):
 - Unchanged material and revised dependency chain:
 - Links, archive contents, file hashes:
 - Authorized remote readback and receipt:

@@ -38,8 +38,8 @@ The user should be able to tell: what changed, why, what was checked, what remai
 
 ## Authorized remote actions
 
-Creation, private sharing, public publication, and email are distinct actions. Reuse explicit authorization already present in the conversation. Preserve an existing audience/access setting unless the user asks to change it.
+Creation, private sharing, public publication, and email are distinct actions. Reuse explicit authorization the user has already given for this work, destination, and visibility; it does not carry over to another project, destination, or audience. Preserve an existing audience/access setting unless the user asks to change it.
 
-Before a write, verify account, destination, selected files, exact content, and duplicate state. Record a durable attempt identifier and intended content before submission. Submit once, then read back the remote object and compare content, visibility, and relevant file hashes or sizes.
+Before a write, verify account, destination, selected files, exact content, synthetic-media disclosure (in the video or description, and the destination's AI or altered-content setting where one exists), and duplicate state. Record a durable attempt identifier and intended content before submission. Submit once, then read back the remote object and compare content, visibility, and relevant file hashes or sizes.
 
 If the result is uncertain, inspect the destination. A search returning nothing can be an indexing delay; it is not automatically evidence that a send or upload failed. Do not repeat a potentially completed external action while its outcome is unresolved. Completion reports distinguish submission acceptance, verified remote presence, recipient receipt, and actual readership.
