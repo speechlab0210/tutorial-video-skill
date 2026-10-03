@@ -21,6 +21,7 @@ These practices are adapted to the format and audience; they are not universal s
 - Match reused audio by content and provenance instead of filenames.
 - Measure actual clips to construct the timeline; verify sync and timing in the final exported movie.
 - Separate recognizer errors from spoken errors and technical success from semantic success.
+- Re-run speech checks after every audio post-processing step; compare spoken numbers and negations as sets, not only an overall score; read the chosen take's transcript; re-baseline accepted takes when the recognizer changes.
 - Cache accepted costly generations, bound retries, and keep resumable state.
 - Verify remote content and visibility after an authorized write; resolve uncertain outcomes before repeating it.
 

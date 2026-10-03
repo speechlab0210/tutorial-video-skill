@@ -2,7 +2,7 @@
 
 讓 AI agent 協助老師把各種主題做成**有主線、講得清楚、可編輯、可查核的課程影片**。
 
-**[English](README.md) · [下載 v1.1.0](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.1.0) · [Skill 入口](tutorial-video/SKILL.md) · [更新紀錄](CHANGELOG.md)**
+**[English](README.md) · [下載 v1.2.0](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.2.0) · [Skill 入口](tutorial-video/SKILL.md) · [更新紀錄](CHANGELOG.md)**
 
 這個 skill 整合既有的教學與表達方法、課程影片製作的工程經驗，以及共同製作 Interspeech tutorial 時反覆修訂所得到的教訓。它適用於不同領域，包含研究教學、軟體操作、實作課、歷史人文、商業簡報、工作坊與一般演講。
 
@@ -17,6 +17,7 @@
 - 停頓依照看圖、思考、預測與轉場的需要安排。
 - 查核來源版本、條件、分母、篩選方式與結論範圍。
 - 修改後同步投影片、備忘稿、逐字稿、配音、字幕、影片與下載素材。
+- 用語音辨識找問題，不拿它當合格證明：除了整體相似度，還要比對數字、百分比與負號、否定詞，逐字讀選定那一版的辨識結果，並在後製完成後對成品聲音再驗一次。
 - 在成品檔裡實測投影片換頁和那段旁白開口的時間（開頭、中段、結尾都量），不拿推算出來的時間表當證據。
 - 旁白是合成或複製的聲音、畫面是生成的寫實影像時，讓觀眾知道。
 - 分開檢查內容正確性、觀眾理解與技術品質。
@@ -25,7 +26,7 @@
 
 ## 安裝與使用
 
-從 [Release](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.1.0) 下載 `tutorial-video-skill-v1.1.0.zip`，或下載整個 repository。Release zip 解開後外層是 `tutorial-video-skill/`，只要把裡面完整的 `tutorial-video/` 子資料夾放進 agent 設定的 skills 目錄，例如：
+從 [Release](https://github.com/speechlab0210/tutorial-video-skill/releases/tag/v1.2.0) 下載 `tutorial-video-skill-v1.2.0.zip`，或下載整個 repository。Release zip 解開後外層是 `tutorial-video-skill/`，只要把裡面完整的 `tutorial-video/` 子資料夾放進 agent 設定的 skills 目錄，例如：
 
 - Claude Code：`~/.claude/skills/tutorial-video/`（個人）或專案內 `.claude/skills/tutorial-video/`
 - Codex：`~/.codex/skills/tutorial-video/`
@@ -46,7 +47,9 @@ Skill 主指令與技術文件以英文撰寫，便於不同 agent 使用；產�
 
 ## 隨附工具與範本
 
-包含需求 brief、證據表、修改對照表、品質檢查表、渲染設定，以及完整的小型教學規劃範例。Python 工具可建立專案、檢查段落與學習目標對應、列出各場景旁白與轉場（供「轉場句排成一列」檢查使用）、檢查 SRT 時碼及建立 SHA-256 清單。安裝成 skill 後，請在自己的專案資料夾工作，用完整路徑呼叫 skill 資料夾裡的腳本；沒有 `python` 指令時改用 `python3` 或 `py -3`。
+包含需求 brief、證據表、修改對照表、品質檢查表、渲染設定，以及完整的小型教學規劃範例。Python 工具可建立專案、檢查段落與學習目標對應、列出各場景旁白與轉場（供「轉場句排成一列」檢查使用）、比對語音辨識結果與稿子、檢查 SRT 時碼及建立 SHA-256 清單。安裝成 skill 後，請在自己的專案資料夾工作，用完整路徑呼叫 skill 資料夾裡的腳本；沒有 `python` 指令時改用 `python3` 或 `py -3`。
+
+語音比對（`project.py speech`）讀入任何你有權使用的辨識器產生的純文字逐字稿，跟場景的旁白與轉場句（或另一個文字檔）比對，列出相似度、漏念／多念／念錯的段落、兩邊的數字（1600、一千六百、one thousand six hundred 視為相同；5萬7千、6:09＝六點零九分也算）、百分比與負號，以及否定詞。數字、百分比或負號、否定詞對不上，或相似度低於你給的門檻時回傳失敗；沒給門檻就只列出相似度、不判合格與否，門檻要用你自己的辨識器在已知好壞樣本上校準後再給。它不會聽，列出來的差異是「要去聽的地方」；辨識器自己改回正確字的念錯（多音字、縮寫、數字讀法）它看不到。拿已完成影片中 1,397 段中文旁白和 103 段英文旁白校準時，分別有 4.4% 與 2.9% 被標出數字差異，幾乎都是辨識器的同音字；刻意改錯的數字和否定詞則全部抓到。
 
 另有簡易靜態投影片影片組裝器：提供圖片與已授權的錄音，再使用 FFmpeg / FFprobe 產生影片與時間軸紀錄。旁白會整條一次編碼、每個場景都從整數影格開始，所以場景再多，聲音也不會一段比一段晚；寫出檔案前會比對解碼後的聲音長度與影片長度。它不會自動生圖、配音、做音量標準化、產生字幕或檢查觀眾理解。動畫與操作示範可使用合適的編輯工具，遵循同一套教學與驗收方法。
 

@@ -3,7 +3,7 @@ name: tutorial-video
 description: Plan, produce, review, or revise a lecture, tutorial, workshop recording, or course video with a coherent learning progression and synchronized editable slides, narration, captions, and media. Use for any subject and for existing instructor materials; a request for slides alone does not require producing a video.
 license: MIT
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Tutorial Video
@@ -58,7 +58,7 @@ For a full new production, make one representative segment spanning a difficult 
 
 Read [media production](references/media-production.md). Use available authorized tools; this skill does not require a particular model, cloud service, operating system, or speaker identity.
 
-Keep the display script, pronunciation form, actual recording, and caption text related but distinct. Use only a voice that is authorized for this use. When narration is synthesized or voice-cloned, or realistic footage or imagery is generated, tell viewers (on screen, in credits, or in the description). Never present a cloned voice speaking new text as an original recording. Do not silently substitute a speaker or upload private scripts to an unapproved service. Record tool versions, settings, input hashes, and accepted takes so unchanged material can be reused.
+Keep the display script, pronunciation form, actual recording, and caption text related but distinct. Check each accepted take with a recognizer as a locator, compare numbers, percent/minus signs, and negations as well as overall similarity, read the chosen take's transcript, and check again on the exported audio after post-processing (see [narration and pacing](references/narration-and-pacing.md#listening-and-asr)). Use only a voice that is authorized for this use. When narration is synthesized or voice-cloned, or realistic footage or imagery is generated, tell viewers (on screen, in credits, or in the description). Never present a cloned voice speaking new text as an original recording. Do not silently substitute a speaker or upload private scripts to an unapproved service. Record tool versions, settings, input hashes, and accepted takes so unchanged material can be reused.
 
 Calculate the timeline from measured rendered media durations. Align captions against actual speech; do not spread text uniformly across a slide and call it word alignment. Verify the exported movie, including its end, rather than only checking inputs. Measure audio/video sync in the exported file itself: at the start, middle, and end, compare how long after its slide change each scene's speech begins with that take's own leading silence; the difference must not grow along the video.
 
@@ -83,6 +83,7 @@ Optional local helpers (Python 3.10+, standard library). `<skill-dir>` is this s
 ```text
 python <skill-dir>/scripts/project.py check <project>/project.json
 python <skill-dir>/scripts/project.py outline <project>/project.json
+python <skill-dir>/scripts/project.py speech --project <project>/project.json --scene S1 --heard <project>/S1.asr.txt
 python <skill-dir>/scripts/project.py captions <project>/captions.srt --duration 120
 python <skill-dir>/scripts/project.py manifest <project>/deliverables --out <project>/manifest.json
 python <skill-dir>/scripts/assemble.py <project>/render.json --out <project>/video.mp4

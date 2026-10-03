@@ -204,6 +204,161 @@ class CaptionTests(unittest.TestCase):
                 self.assertEqual(result.stdout, b"")
 
 
+class SpeechTests(unittest.TestCase):
+    def assert_same(self, script, heard):
+        report = project.compare_speech(script, heard)
+        self.assertEqual((report["failed"], report["warnings"]), ([], []), report)
+
+    def assert_flagged(self, script, heard, check):
+        report = project.compare_speech(script, heard)
+        self.assertIn(check, report["failed"], report)
+
+    def test_written_and_spoken_number_forms_match(self):
+        for script, heard in (
+                ("40 段做完，晚了 1.13 秒。", "四十段做完，晚了一點一三秒。"),
+                ("投稿超過 3,000 篇，2025 年有 1600 篇。", "投稿超過三千篇，二零二五年有一千六百篇。"),
+                ("準確率 29%，約 1.5 萬人。", "準確率百分之二十九，約一萬五千人。"),
+                ("105、1600、35000、23000、10005", "一百零五、一千六、三萬五、兩萬三千、一萬零五"),
+                ("預算 5千萬、2萬3千、3億5千萬、5萬7千、3萬5、1億2000萬", "預算五千萬、兩萬三千、三億五千萬、五萬七千、三萬五、一億兩千萬"),
+                ("營收 3 萬 5 千元，錄了 3.5萬 小時，1.2億", "營收三萬五千元，錄了三點五萬小時，一點二億"),
+                ("早上 6:09、下午 3:30、12:00", "早上六點零九分、下午三點三十分、十二點"),
+                ("百分之八十八到九十八，溫度 -3 度", "88%-98%，溫度負三度"),
+                ("每一個人在那一年做這一題", "每個人在那年做這1題"),
+                ("批次 128，256，512；成立於 2019，200 人", "批次128、256、512；成立於二零一九，兩百人"),
+                ("It took 1.13 seconds over 40 scenes in 2025.",
+                 "It took one point one three seconds over forty scenes in two thousand twenty five."),
+                ("Page 105, then 15 and 29; 1 million; 3 billion; 1.5 million",
+                 "Page one hundred and five, then fifteen and twenty-nine; one million; three billion; one point five million"),
+                ("Between 100 and 500, from 1,000 and 2,000; 92%; -3; 0.5",
+                 "Between one hundred and five hundred, from one thousand and two thousand; ninety-two percent; minus three; point five"),
+                ("On August 11th, July 24th, the 21st century", "On August eleventh, July twenty fourth, the twenty-first century"),
+                ("Python 3.10 and v1.2.0", "Python three point one zero and v one point two point zero"),
+                ("We don’t know; it isnʼt; can't, cannot, won't, shan't. NOT",
+                 "We do not know; it is not; can not, can not, will not, shall not. not"),
+                ("１２３、沒有、無、別", "123、没有、无、别"),
+                ("MOS 從 3.82 分提升到 4.15 分，每段 1.75 分鐘", "MOS從三點八二分提升到四點一五分，每段一點七五分鐘"),
+                ("準確率約 88 到 98%；提升了 15%，到 2026 年", "準確率約百分之八十八到九十八；提升了百分之十五，到二零二六年"),
+                ("營收 3 千 5 百元，大約 3 萬 5，預算 1 億 2000 萬元", "營收三千五百元，大約三萬五，預算一億兩千萬元"),
+                ("Divide by n-1 at step t-1.", "Divide by n minus one at step t minus one."),
+                ("[開場] 大家好，今天三件事", "[音樂] 大家好，今天三件事 [Music]")):
+            with self.subTest(script=script):
+                self.assert_same(script, heard)
+
+    def test_counting_words_and_ranges_stay_separate_numbers(self):
+        def numbers(text):
+            return [item[1] for item in project.speech_items(text)[1] if item[0] == "num"]
+        self.assertEqual(numbers("one two three"), ["1", "2", "3"])
+        self.assertEqual(numbers("兩三個、三四十、十五六"), ["2", "3", "3", "40", "15", "6"])
+        self.assertEqual(numbers("二零二五年、九八年、一百零五"), ["2025", "98", "105"])
+
+    def test_changed_number_fails_even_when_similarity_is_high(self):
+        report = project.compare_speech("最後一段晚了 1.13 秒，共 40 段，測了 3 次。",
+                                        "最後一段晚了一點一二秒，共四十段，測了三次。")
+        self.assertGreater(report["similarity"], 0.9)
+        self.assertEqual(report["failed"], ["numbers"])
+        self.assertEqual((report["numbers"]["missing"], report["numbers"]["extra"]), (["1.13"], ["1.12"]))
+        self.assertEqual(report["numbers"]["missing_as_written"], {"1.13": ["1.13"]})
+
+    def test_number_errors_that_look_similar_are_flagged(self):
+        for script, heard in (("每組兩三個人。", "每組二十三個人。"), ("一共三十四個", "一共三四個"),
+                              ("這一題", "這七題"), ("只有一個", "只有兩個"), ("3.5萬", "三點六萬"), ("5千萬", "五千"),
+                              ("五萬七千", "5萬8千"), ("六點零九分", "6點19分"), ("Python 3.10", "Python 3.1"),
+                              ("August eleventh", "August 12th")):
+            with self.subTest(script=script):
+                self.assert_flagged(script, heard, "numbers")
+
+    def test_dropped_percent_and_sign_are_flagged(self):
+        for script, heard in (("準確率是 29%。", "準確率是二十九。"), ("正確率是百分之三十。", "正確率是三十。"),
+                              ("錯誤率是千分之三。", "錯誤率是百分之三。"), ("今天氣溫是 -3 度。", "今天氣溫是三度。"),
+                              ("Accuracy is 92%.", "Accuracy is ninety-two."), ("Set x to -3.", "Set x to three.")):
+            with self.subTest(script=script):
+                self.assert_flagged(script, heard, "markers")
+
+    def test_dropped_negation_fails(self):
+        for script, heard in (("這不是因果關係。", "這是因果關係。"),
+                              ("The score does not mean accuracy.", "The score does mean accuracy."),
+                              ("沒有證據", "有證據"), ("It isnʼt wrong.", "It is wrong.")):
+            with self.subTest(script=script):
+                report = project.compare_speech(script, heard)
+                self.assertEqual(report["failed"], ["negations"])
+                self.assertEqual(report["differences"][0]["change"], "missing")
+
+    def test_digit_by_digit_quantity_is_shown_not_failed(self):
+        report = project.compare_speech("這批資料共 1600 筆。", "這批資料共一六零零筆。")
+        self.assertEqual(report["failed"], [])
+        self.assertIn({"change": "replaced", "script": "1600", "heard": "一六零零", "after": "這批資料共"},
+                      report["differences"])
+        self.assertTrue(any("digit by digit" in warning for warning in report["warnings"]))
+        self.assertFalse(project.compare_speech("2025 的時候", "二零二五的時候")["warnings"])
+        self.assertTrue(project.compare_speech("上下文長度 2048 個 token", "上下文長度二零四八個token")["warnings"])
+
+    def test_differences_locate_substitutions_for_listening(self):
+        report = project.compare_speech("銀行的重點是重新開始", "銀杏的重點是從新開始")
+        self.assertIn({"change": "replaced", "script": "行", "heard": "杏", "after": "銀"}, report["differences"])
+        self.assertIn("not performed", report["listening"])
+        self.assertEqual(report["similarity_check"],
+                         "not performed (pass --min-similarity calibrated for this recognizer)")
+        report = project.compare_speech("千萬不要跳過這一步。", "千萬不要跳過這步")
+        self.assertEqual((report["failed"], report["differences"][0]["after"]), ([], "千萬不要跳過這"))
+        report = project.compare_speech("準確率是百分之二十九，很高。", "準確率是二十九，很高。")
+        self.assertEqual(report["differences"][0]["script"], "百分之")
+        report = project.compare_speech("it grows 2 per century", "it grows 2 century")
+        self.assertEqual(report["differences"][0]["script"], "per")
+
+    def test_warns_when_transcript_uses_another_chinese_script(self):
+        report = project.compare_speech("我們說這個時候會來", "我们说这个时候会来")
+        self.assertTrue(any("Simplified" in warning for warning in report["warnings"]))
+        self.assertTrue(project.compare_speech("於是我把實驗重跑一遍", "于是我把实验重跑一遍")["warnings"])
+        self.assertFalse(project.compare_speech("那段路有三公里，我們走過去", "那段路有三公里，我們走過去")["warnings"])
+
+    def test_empty_transcript_fails(self):
+        report = project.compare_speech("大家好，歡迎來到這堂課。", "♪")
+        self.assertIn("empty transcript", report["failed"])
+        with self.assertRaises(ValueError):
+            project.compare_speech("。。。", "大家好")
+
+    def test_cli_scene_script_checks_and_errors(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            plan = project.read_json(SKILL / "assets/examples/weighted-averages.json")
+            project.write_json(root / "project.json", plan)
+            scene = plan["scenes"][1]
+            (root / "good.txt").write_text(scene["narration"] + " " + scene["transition"], encoding="utf-8")
+            good = run_helper("speech", "--project", root / "project.json", "--scene", "S2", "--heard", root / "good.txt")
+            self.assertEqual(good.returncode, 0, good.stderr)
+            self.assertEqual(json.loads(good.stdout.decode("utf-8"))["similarity"], 1.0)
+
+            def case(name, script, heard, *extra):
+                (root / f"{name}-s.txt").write_text(script, encoding="utf-8")
+                (root / f"{name}-h.txt").write_text(heard, encoding="utf-8")
+                result = run_helper("speech", "--script", root / f"{name}-s.txt", "--heard", root / f"{name}-h.txt", *extra)
+                return result.returncode, json.loads(result.stdout.decode("utf-8"))["failed"]
+
+            self.assertEqual(case("num", "今天測了 3 次，共 40 段。", "今天測了四次，共四十段。"), (1, ["numbers"]))
+            self.assertEqual(case("neg", "這不是因果關係。", "這是因果關係。"), (1, ["negations"]))
+            self.assertEqual(case("mark", "下降 5%", "下降五"), (1, ["markers"]))
+            self.assertEqual(case("sim", "銀行的重點是重新開始", "銀杏的重點是從新開始", "--min-similarity", "0.95"),
+                             (1, ["similarity"]))
+            self.assertEqual(case("edge", "銀行的重點是重新開始", "銀杏的重點是從新開始", "--min-similarity", "0.8"), (0, []))
+            self.assertEqual(case("tag", "大家好，今天三件事", "[音樂] 大家好，今天三件事"), (0, []))
+            self.assertEqual(case("blank", "大家好，今天三件事", "[BLANK_AUDIO]"), (1, ["numbers", "empty transcript"]))
+            (root / "srt.txt").write_text("1\n00:00:00,000 --> 00:00:02,000\n今天\n", encoding="utf-8")
+            (root / "utf16.txt").write_bytes("今天".encode("utf-16"))
+            (root / "json.txt").write_text('[{"text": "今天", "start": 0.0}]', encoding="utf-8")
+            (root / "heard.txt").write_text("今天測了三次。", encoding="utf-8")
+            for args, message in ((("--project", root / "project.json"), b"--project needs --scene"),
+                                  (("--project", root / "project.json", "--scene", "S9"), b"not found"),
+                                  (("--project", root, "--scene", "S1"), b"is a directory"),
+                                  (("--script", root / "heard.txt", "--scene", "S2"), b"--scene needs --project"),
+                                  (("--script", root / "srt.txt"), b"looks like captions"),
+                                  (("--script", root / "json.txt"), b"looks like captions"),
+                                  (("--script", root / "utf16.txt"), b"UTF-16")):
+                with self.subTest(args=args):
+                    result = run_helper("speech", *args, "--heard", root / "heard.txt")
+                    self.assertEqual(result.returncode, 2)
+                    self.assertIn(message, result.stderr)
+
+
 class IntegrityTests(unittest.TestCase):
     def test_hashes_track_actual_bytes_and_relative_paths(self):
         with tempfile.TemporaryDirectory() as temp:

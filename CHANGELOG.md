@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 — 2026-10-03
+
+Checking synthesized or recorded speech with a recognizer, made explicit.
+
+- New helper `project.py speech`: compares a recognizer's plain-text transcript with a scene's narration and transition (or any script file). It reports token similarity; missing, extra, and replaced passages as written, with the script text before each; the numbers on each side, with written and spoken forms treated as equal (Arabic digits with separators, decimals, and mixed Chinese scales such as 5萬7千; Chinese numerals such as 一千六 and 三點五萬; years read digit by digit; clock times; English number words and ordinals); percent and minus signs; and negation words, with Simplified forms and English contractions folded. Ranges such as 兩三 stay two numbers (except two numerals directly before 年, read as a year), one percent sign covers both ends of a range, the determiner 一 in 這一題 is not counted as a number, decimals keep their written digits (3.10 ≠ 3.1; an all-zero fraction is dropped, 2.0 = 2), and bracketed non-speech tags such as [Music] are ignored. It exits 1 when numbers, signs, or negations differ, the transcript is empty, or similarity is below a calibrated `--min-similarity`; it warns about digit-by-digit readings of quantities and about Simplified characters aligned against a Traditional script, and refuses caption or JSON files as input. It does not run a recognizer, listen, or compare phonetically.
+- Calibrated before release on 1,397 accepted Chinese and 103 English narration segments from finished videos (three recognizers): 4.4% of Chinese and 2.9% of English segments are flagged for a number difference and 0.9% of Chinese segments for a negation, nearly all recognizer homophones or dropped words; every planted digit, numeral, dropped number, and dropped or replaced negation was caught. A first draft flagged 9% of Chinese segments; the fixes came from reading those false alarms.
+- Guidance: a score ranks takes but does not say what the chosen take says, so read its transcript; compare numbers, signs, and negations as sets; re-run the checks on the exported audio scene by scene, because post-processing can change speech that passed as a take; re-baseline accepted takes when the recognizer or its settings change; convert script variants before judging differences.
+- Review template and a behavioral case for speech that changed after it passed. Text-file arguments now name the flag when a file is a directory or not UTF-8.
+- 39 tests (28 in 1.1.0).
+
 ## 1.1.0 — 2026-10-03
 
 A review of 1.0.0 (six independent review angles, each finding checked by two verifiers, plus a fresh-agent trial run) found the problems below, and a second independent review checked the fixes. All are fixed here.

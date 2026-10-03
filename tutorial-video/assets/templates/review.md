@@ -25,6 +25,7 @@
 - Every slide and consequential reveal state:
 - Native editable sources and embedded media:
 - Actual audio, critical names/numbers/heteronyms/negation:
+- Transcription re-run on the exported audio after all post-processing (numbers, negations, chosen take's transcript read; recognizer and settings):
 - Loudness (measured integrated / true peak, target):
 - Full decode, measured duration, final seconds/frame:
 - A/V sync measured in the exported file (speech onset after slide change minus the take's own leading silence, start/middle/end):
