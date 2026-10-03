@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tutorial Video"
+  short_description: "Create coherent, editable lessons and course videos"
+  default_prompt: "Use $tutorial-video to turn my topic and materials into a clear course video with synchronized editable sources."

@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "video": {"width": 1280, "height": 720, "fps": 30},
+  "scenes": [
+    {"id": "S1", "slide": "slides/S1.png", "audio": "audio/S1.wav", "hold_after": 0.5},
+    {"id": "S2", "slide": "slides/S2.png", "audio": "audio/S2.wav", "hold_after": 1.0}
+  ]
+}

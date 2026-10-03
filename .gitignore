@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+my-lesson/
+dist/
+*.mp4
+*.wav
+*.mp3
+*.pptx
+*.pdf

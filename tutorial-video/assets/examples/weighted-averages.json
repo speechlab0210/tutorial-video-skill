@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "title": "When is an average of averages misleading?",
+  "audience": "Learners who can calculate an arithmetic mean",
+  "language": "en",
+  "central_question": "Should we give each group or each individual equal weight?",
+  "objectives": [
+    {"id": "O1", "text": "Calculate a pooled mean from group sizes and group means."},
+    {"id": "O2", "text": "Explain when equal weighting of group means answers a different question."}
+  ],
+  "sections": [
+    {"id": "SEC1", "question": "Who receives equal weight?"},
+    {"id": "SEC2", "question": "How does the rule transfer when group sizes change?"}
+  ],
+  "claims": [
+    {"id": "C1", "text": "In this fictional example, the pooled mean is 65 and the equally weighted mean of group means is 70.", "kind": "illustration", "status": "verified", "conditions": "10 observations with mean 80 and 30 observations with mean 60; arithmetic calculated from the constructed inputs."}
+  ],
+  "scenes": [
+    {
+      "id": "S1", "section": "SEC1", "objective_ids": ["O2"], "claim_ids": [],
+      "title": "Two classrooms, one tempting shortcut",
+      "narration": "Imagine two fictional classrooms. Ten learners average 80 points. Thirty learners average 60. If we average 80 and 60, we get 70. Are we weighting each classroom equally, or each learner? Pause and predict.",
+      "transition": "To answer, let's recover the points contributed by each group.",
+      "beats": [
+        {"id": "B1", "spoken": "Ten learners average 80; thirty average 60.", "visual": "Two labeled groups with visibly different sizes; all numbers marked as a fictional example.", "cue": "Reveal the first group, then the second as each is named."},
+        {"id": "B2", "spoken": "Does 70 give each classroom or each learner equal weight?", "visual": "The two group means enter two equally sized boxes.", "cue": "Show the question and allow a deliberate prediction pause."}
+      ]
+    },
+    {
+      "id": "S2", "section": "SEC1", "objective_ids": ["O1", "O2"], "claim_ids": ["C1"],
+      "title": "Count the learners in the denominator",
+      "narration": "The first group contributes 10 times 80, or 800 points. The second contributes 30 times 60, or 1800. Together that is 2600 points across 40 learners: 65 points per learner. The number 70 weights each classroom equally. The number 65 weights each learner equally. They answer different questions.",
+      "transition": "Now change the group sizes while keeping their averages fixed.",
+      "beats": [
+        {"id": "B3", "spoken": "800 points plus 1800 points gives 2600.", "visual": "Editable arithmetic connected to the corresponding group, with units.", "cue": "Highlight one contribution at a time before revealing the sum."},
+        {"id": "B4", "spoken": "Across 40 learners, the mean is 65.", "visual": "2600 points divided by 40 learners; separate box shows equal-classroom average 70.", "cue": "Highlight the denominator before comparing the two results."}
+      ]
+    },
+    {
+      "id": "S3", "section": "SEC2", "objective_ids": ["O1", "O2"], "claim_ids": [],
+      "title": "Transfer: equal group sizes",
+      "narration": "Suppose each classroom now has 20 learners, with the same averages of 80 and 60. Pause and calculate the pooled mean. It is 70: 1600 plus 1200, divided by 40. When the group sizes are equal, the two weighting rules agree. When you see an average of averages, ask who received equal weight and whether that matches the question.",
+      "transition": "We can now answer the opening question: choose the weights to match the unit whose average you want.",
+      "beats": [
+        {"id": "B5", "spoken": "Each classroom now has 20 learners.", "visual": "Same layout with equal group sizes; means stay fixed.", "cue": "Change only group sizes, then pause before revealing the calculation."},
+        {"id": "B6", "spoken": "Choose the weights to match the question.", "visual": "Two labeled questions: per classroom or per learner.", "cue": "Return to the opening contrast for the conclusion."}
+      ]
+    }
+  ]
+}
